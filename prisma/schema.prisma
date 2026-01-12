@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -15,11 +14,11 @@ enum Role {
 
 model User {
   id       String @id @default(uuid())
-  email    String @unique
   name     String
+  email    String @unique
   password String
+  role     Role   @default(STAFF)
 
-  role      Role     @default(STAFF)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -27,12 +26,12 @@ model User {
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id   String @id @default(uuid())
+  name String
 
-  products Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 
   @@map("categories")
 }
@@ -40,8 +39,8 @@ model Category {
 model Product {
   id          String  @id @default(uuid())
   name        String
-  description String?
-  price       Int
+  price       Int // centavos
+  description String
   banner      String
   disabled    Boolean @default(false)
 
@@ -58,13 +57,14 @@ model Product {
 model Order {
   id     String  @id @default(uuid())
   table  Int
-  status Boolean @default(false)
-  draft  Boolean @default(true)
+  status Boolean @default(false) // false = Pendente, true = Pronto
+  draft  Boolean @default(true) // false ainda é rascunho, foi enviado para cozinha
   name   String?
+
+  items Item[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  items     Item[]
 
   @@map("orders")
 }
